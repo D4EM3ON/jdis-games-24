@@ -4,6 +4,7 @@ from core.action import MoveAction, ShootAction, RotateBladeAction, SwitchWeapon
 from core.consts import Consts
 from core.game_state import GameState, PlayerWeapon, Point
 from core.map_state import MapState
+from src.our_player import OurPlayer
 
 
 class MyBot:
@@ -19,6 +20,7 @@ class MyBot:
      
      def __init__(self):
           self.name = "Magellan"
+          self.player = OurPlayer()
 
 
      def on_tick(self, game_state: GameState) -> List[Union[MoveAction, SwitchWeaponAction, RotateBladeAction, ShootAction, SaveAction]]:
@@ -73,9 +75,14 @@ class MyBot:
           """
           print(f"Current tick: {game_state.current_tick}")
 
+          self.player.get_our_player_info(game_state)
+          
           actions = [
-               MoveAction((10.0, 11.34)),
-               ShootAction((11.2222, 13.547)),
+               MoveAction((10, 50)),
+               MoveAction((20, 50)),
+               MoveAction((30, 50)),
+               MoveAction((40, 50)),
+               MoveAction((50, 50)),
                SwitchWeaponAction(PlayerWeapon.PlayerWeaponBlade),
                SaveAction(b"Hello World"),
           ]
