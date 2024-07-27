@@ -94,7 +94,7 @@ class MyBot:
                # pour nous romain mettre du code ici
                closest_treasure = self.treasure_ctrl.get_closest_treasure(game_state)
                if closest_treasure:
-                    current_dest = self.treasure_ctrl.get_closest_treasure(game_state).pos
+                    current_dest = closest_treasure.pos
                elif self.counter % 4 == 0:
                     current_dest = Point(0, 0)
                elif self.counter % 4 == 1:
@@ -110,12 +110,13 @@ class MyBot:
                current_dest = Point(50, 50)
           
           # self.all_players_ctrl.next_tick(game_state)
-          other_player_pos = self.player.calculate_next_position_closest_player(game_state)
+          other_player_pos, other_player = self.player.calculate_next_position_closest_player(game_state, ticker_count=1)
           actions = [
                SwitchWeaponAction(PlayerWeapon.PlayerWeaponCanon) if self.counter == 1 else ShootAction((other_player_pos.x, other_player_pos.y)),
-               MoveAction((current_dest.x, current_dest.y)),
+               MoveAction((current_dest.x, current_dest.y)), 
           ]
-          
+          for i in range(8):
+               actions.append(ShootAction((other_player_pos.x, other_player_pos.y)))
           return actions
     
     

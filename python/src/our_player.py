@@ -28,26 +28,34 @@ class Player:
         self.current_points = self.get_player_info(game_state)
         return self.previous_points == self.current_points
         
-    def calculate_next_position_closest_player(self, game_state: GameState, speed: float = 1.15) -> Point:
+    def calculate_next_position_closest_player(self, game_state: GameState, speed: float = 1.15, name=None, ticker_count=1) -> tuple[Point, PlayerInfo]:
 
-        closest_player = sorted(game_state.players, key=lambda player: self.get_player_info(game_state).pos.distance_to(player.dest))[1]
-        
+        closest_player = sorted(game_state.players, key=lambda player: self.get_player_info(game_state).pos.distance_to(player.dest))
+        # print([(player.name, player.)])
+        for player in closest_player:
+            if player.name != self.name:
+                if (name and player.name == name) or not name:
+                    closest_player = player
+                    break
+        print(f"Closest player: {closest_player.name}, distance: {self.get_player_info(game_state).pos.distance_to(closest_player.dest)}")
         direction_x = closest_player.dest.x - closest_player.pos.x
         direction_y = closest_player.dest.y - closest_player.pos.y
         magnitude = math.sqrt(direction_x ** 2 + direction_y ** 2)
         if magnitude == 0:
-            return Point(closest_player.pos.x, closest_player.pos.y)
+            return Point(closest_player.pos.x, closest_player.pos.y), closest_player
         
         unit_direction_x = direction_x / magnitude
         unit_direction_y = direction_y / magnitude
 
-        displacement_x = unit_direction_x * speed
-        displacement_y = unit_direction_y * speed
+        displacement_x = unit_direction_x * speed * ticker_count
+        displacement_y = unit_direction_y * speed * ticker_count
 
         next_x = closest_player.pos.x + displacement_x
         next_y = closest_player.pos.y + displacement_y
 
-        return Point(next_x, next_y)
+        print(f"Closest player: {closest_player.name}, next position: {next_x}, {next_y}")
+        
+        return Point(next_x, next_y), closest_player
 
         
 class AllPlayersCtrl:
