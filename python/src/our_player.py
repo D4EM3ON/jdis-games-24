@@ -16,4 +16,4 @@ class OurPlayer:
     def ran_into_wall(self, game_state) -> bool:
         self.previous_pos = copy.deepcopy(self.current_pos)
         self.current_pos = self.get_our_player_info(game_state)
-        
+        return self.previous_pos == self.current_pos
