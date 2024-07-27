@@ -7,6 +7,9 @@ from core.map_state import MapState
 from src.treasure_plz import TreasuresCtrl
 from src.our_player import AllPlayersCtrl, Player
 
+def flatten_comprehension(matrix):
+     return [item for row in matrix for item in row]
+
 class MyBot:
      """
      (fr) Cette classe représente votre bot. Vous pouvez y définir des attributs et des méthodes qui 
@@ -83,7 +86,10 @@ class MyBot:
           print(f"Current tick: {game_state.current_tick}")
           # print(f"Map_save: {self.map_save}")
 
+          SaveAction(bytearray(flatten_comprehension(self.map_save)))
           current_dest = self.player.get_player_info(game_state).dest
+
+          self.player.get_our_player_info(game_state)
           
           points_changed = self.player.have_we_gotten_points(game_state)
           
@@ -164,8 +170,11 @@ class MyBot:
                     [1,1,1,1,1,1,1,1,1,1,1,]
                ]
           else:
-               self.map_save = map_state.save
+               self.map_save = []
+               for i in range(0,121,11):
+                    self.map_save.append(list(map(int,map_state.save[i:i+11])))
 
      def save_wall(self, pt):
           self.map_save[round(pt.x/10)][round(pt.y/10)] = 1
+
           
