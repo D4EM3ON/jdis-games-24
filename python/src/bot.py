@@ -6,8 +6,6 @@ from core.game_state import GameState, PlayerWeapon, Point
 from core.map_state import MapState
 from src.treasure_plz import TreasuresCtrl
 from src.our_player import AllPlayersCtrl, Player
-import bytearray
-
 
 class MyBot:
      """
@@ -26,7 +24,8 @@ class MyBot:
           self.current_goal = None
           self.treasure_ctrl = TreasuresCtrl()
           self.counter = 0
-          self.all_players_ctrl = AllPlayersCtrl()
+          self.map_save = None
+          # self.all_players_ctrl = AllPlayersCtrl()
 
 
      def on_tick(self, game_state: GameState) -> List[Union[MoveAction, SwitchWeaponAction, RotateBladeAction, ShootAction, SaveAction]]:
@@ -79,8 +78,10 @@ class MyBot:
                game_state (GameState): (fr): L'état de la partie.
                                         (en): The state of the game.   
           """
+          # self.load_save(self.__map_state)
+          
           print(f"Current tick: {game_state.current_tick}")
-
+          # print(f"Map_save: {self.map_save}")
 
           current_dest = self.player.get_player_info(game_state).dest
           
@@ -103,20 +104,18 @@ class MyBot:
                elif self.counter % 4 == 3:
                     current_dest = Point(100, 100)
           
-          
           self.counter += 1
           
           if not current_dest:
                current_dest = Point(50, 50)
           
-          self.all_players_ctrl.next_tick(game_state)
-
+          # self.all_players_ctrl.next_tick(game_state)
+          other_player_pos = self.player.calculate_next_position_closest_player(game_state)
           actions = [
-               SwitchWeaponAction(PlayerWeapon.PlayerWeaponCanon) if self.counter == 1 else ShootAction(self.player.get_nearest_player(game_state).pos),
+               SwitchWeaponAction(PlayerWeapon.PlayerWeaponCanon) if self.counter == 1 else ShootAction((other_player_pos.x, other_player_pos.y)),
                MoveAction((current_dest.x, current_dest.y)),
-               SaveAction(b"Hello World"),
           ]
-
+          
           return actions
     
     
@@ -133,6 +132,7 @@ class MyBot:
                                    (en) The state of the map.
           """
           self.__map_state = map_state
+          self.load_save(map_state)
           pass
 
 
@@ -160,7 +160,7 @@ class MyBot:
                     [1,0,0,0,0,0,0,0,0,0,1,],
                     [1,0,0,0,0,0,0,0,0,0,1,],
                     [1,0,0,0,0,0,0,0,0,0,1,],
-                    [1,1,1,1,1,1,1,1,1,1,1,]  
+                    [1,1,1,1,1,1,1,1,1,1,1,]
                ]
           else:
                self.map_save = map_state.save
