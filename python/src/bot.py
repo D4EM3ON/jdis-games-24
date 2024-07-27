@@ -5,6 +5,7 @@ from core.consts import Consts
 from core.game_state import GameState, PlayerWeapon, Point
 from core.map_state import MapState
 from src.our_player import OurPlayer
+import bytearray
 
 
 class MyBot:
@@ -115,4 +116,26 @@ class MyBot:
                at the end of the game.
           """
           pass
-        
+
+     def load_save(self, map_state):
+          # set map_state to 0 to force reset
+          if not int(map_state.save):
+               self.map_save = [
+                    [1,1,1,1,1,1,1,1,1,1,1,],
+                    [1,0,0,0,0,0,0,0,0,0,1,],
+                    [1,0,0,0,0,0,0,0,0,0,1,],
+                    [1,0,0,0,0,0,0,0,0,0,1,],
+                    [1,0,0,0,0,0,0,0,0,0,1,],
+                    [1,0,0,0,0,0,0,0,0,0,1,],
+                    [1,0,0,0,0,0,0,0,0,0,1,],
+                    [1,0,0,0,0,0,0,0,0,0,1,],
+                    [1,0,0,0,0,0,0,0,0,0,1,],
+                    [1,0,0,0,0,0,0,0,0,0,1,],
+                    [1,1,1,1,1,1,1,1,1,1,1,]  
+               ]
+          else:
+               self.map_save = map_state.save
+
+     def save_wall(self, pt):
+          self.map_save[round(pt.x/10)][round(pt.y/10)] = 1
+          
