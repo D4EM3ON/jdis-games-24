@@ -1,4 +1,5 @@
 import json
+import math
 import struct
 from dataclasses import dataclass, field
 from typing import List, Tuple
@@ -16,6 +17,12 @@ class Point:
     
     def __str__(self):
         return json.dumps(self.__dict__)
+    
+    def __eq__(self, other: 'Point'):
+        return round(self.x, 2) == round(other.x, 2) and round(self.y, 2) == round(other.y, 2)
+    
+    def distance_to(self, other: 'Point') -> float:
+        return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
 @dataclass
 class Collider:

@@ -4,7 +4,8 @@ from core.action import MoveAction, ShootAction, RotateBladeAction, SwitchWeapon
 from core.consts import Consts
 from core.game_state import GameState, PlayerWeapon, Point
 from core.map_state import MapState
-from src.our_player import OurPlayer
+from src.treasure_plz import TreasuresCtrl
+from src.our_player import AllPlayersCtrl, Player
 
 
 class MyBot:
@@ -20,7 +21,11 @@ class MyBot:
      
      def __init__(self):
           self.name = "Magellan"
-          self.player = OurPlayer()
+          self.player = Player()
+          self.current_goal = None
+          self.treasure_ctrl = TreasuresCtrl()
+          self.counter = 0
+          self.all_players_ctrl = AllPlayersCtrl()
 
 
      def on_tick(self, game_state: GameState) -> List[Union[MoveAction, SwitchWeaponAction, RotateBladeAction, ShootAction, SaveAction]]:
@@ -75,18 +80,42 @@ class MyBot:
           """
           print(f"Current tick: {game_state.current_tick}")
 
-          self.player.get_our_player_info(game_state)
+
+          current_dest = self.player.get_player_info(game_state).dest
           
+          points_changed = self.player.have_we_gotten_points(game_state)
+          
+          if points_changed:
+               self.treasure_ctrl.clear_where_we_already_went()
+          
+          if self.player.ran_into_wall(game_state) and not points_changed:
+               # pour nous romain mettre du code ici
+               closest_treasure = self.treasure_ctrl.get_closest_treasure(game_state)
+               if closest_treasure:
+                    current_dest = self.treasure_ctrl.get_closest_treasure(game_state).pos
+               elif self.counter % 4 == 0:
+                    current_dest = Point(0, 0)
+               elif self.counter % 4 == 1:
+                    current_dest = Point(100, 0)
+               elif self.counter % 4 == 2:
+                    current_dest = Point(0, 100)
+               elif self.counter % 4 == 3:
+                    current_dest = Point(100, 100)
+          
+          
+          self.counter += 1
+          
+          if not current_dest:
+               current_dest = Point(50, 50)
+          
+          self.all_players_ctrl.next_tick(game_state)
+
           actions = [
-               MoveAction((10, 50)),
-               MoveAction((20, 50)),
-               MoveAction((30, 50)),
-               MoveAction((40, 50)),
-               MoveAction((50, 50)),
-               SwitchWeaponAction(PlayerWeapon.PlayerWeaponBlade),
+               SwitchWeaponAction(PlayerWeapon.PlayerWeaponCanon) if self.counter == 1 else ShootAction(self.player.get_nearest_player(game_state).pos),
+               MoveAction((current_dest.x, current_dest.y)),
                SaveAction(b"Hello World"),
           ]
-                    
+
           return actions
     
     

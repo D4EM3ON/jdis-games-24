@@ -35,7 +35,6 @@ class Coin:
     def __str__(self) -> str:
         return json.dumps(self.__dict__)
 
-
 class PlayerWeapon(IntEnum):
     PlayerWeaponNone    = 0
     PlayerWeaponCanon   = 1
